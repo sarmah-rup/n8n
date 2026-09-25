@@ -1881,7 +1881,7 @@ describe('WorkflowService', () => {
 				arrangeSuccessfulActivation(workflow);
 				workflowHistoryServiceMock.getVersion.mockResolvedValue(versionToActivate);
 
-				await workflowService.activateWorkflow(mock<User>(), WORKFLOW_ID, {
+				await workflowService.activateWorkflow(mock<User>({ id: 'user-1' }), WORKFLOW_ID, {
 					versionId: TARGET_VERSION_ID,
 				});
 
@@ -1894,7 +1894,7 @@ describe('WorkflowService', () => {
 						},
 						projectId: 'project-1',
 					},
-					expect.anything(),
+					{ kind: 'user', user: expect.objectContaining({ id: 'user-1' }) },
 				);
 			});
 
@@ -1912,7 +1912,7 @@ describe('WorkflowService', () => {
 					candidate.nodes.push({ name: 'Injected by hook' } as INode);
 				});
 
-				await workflowService.activateWorkflow(mock<User>(), WORKFLOW_ID, {
+				await workflowService.activateWorkflow(mock<User>({ id: 'user-1' }), WORKFLOW_ID, {
 					versionId: TARGET_VERSION_ID,
 				});
 
@@ -1920,7 +1920,7 @@ describe('WorkflowService', () => {
 					expect.objectContaining({
 						workflow: expect.objectContaining({ nodes: originalNodes }),
 					}),
-					expect.anything(),
+					{ kind: 'user', user: expect.objectContaining({ id: 'user-1' }) },
 				);
 			});
 
@@ -1937,7 +1937,7 @@ describe('WorkflowService', () => {
 					candidate.nodes = [{ name: 'Rewritten by hook' } as INode];
 				});
 
-				await workflowService.activateWorkflow(mock<User>(), WORKFLOW_ID, {
+				await workflowService.activateWorkflow(mock<User>({ id: 'user-1' }), WORKFLOW_ID, {
 					versionId: TARGET_VERSION_ID,
 				});
 
@@ -1945,7 +1945,7 @@ describe('WorkflowService', () => {
 					expect.objectContaining({
 						workflow: expect.objectContaining({ nodes: versionToActivate.nodes }),
 					}),
-					expect.anything(),
+					{ kind: 'user', user: expect.objectContaining({ id: 'user-1' }) },
 				);
 			});
 
