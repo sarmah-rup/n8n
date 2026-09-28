@@ -1033,9 +1033,13 @@ export class AgentRuntimeReconstructionService {
 		});
 		this.attachWriteTodosTool(agent, agentId);
 		if (!backgroundTasksEnabled) return;
+		// Background tools attach only to the root agent, so its cap is the root cap.
+		const budget = config.config?.guardrails?.budget;
+		const rootSessionCapUsd = budget?.enabled ? budget.sessionCostCapUsd : undefined;
 		await this.attachBackgroundJobTools({
 			...delegationParams,
 			...(parentWorkspaceHandle !== undefined ? { parentWorkspaceHandle } : {}),
+			...(rootSessionCapUsd !== undefined ? { rootSessionCapUsd } : {}),
 		});
 		agent.volatileInstructionsProvider(async ({ persistence }) => {
 			if (!persistence?.threadId) return undefined;
@@ -1145,6 +1149,7 @@ export class AgentRuntimeReconstructionService {
 		user?: User;
 		instrumentation?: AgentRuntimeInstrumentation;
 		parentWorkspaceHandle?: AgentSandboxRuntime;
+		rootSessionCapUsd?: number;
 	}): Promise<void> {
 		const { agent, parentAgentId, projectId, delegation, ...runContext } = params;
 		const {
